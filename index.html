@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#262628">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>VICINITI</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@500;700&family=Exo+2:wght@300;400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div id="device">
+  <header id="topbar">
+    <span class="brand">VICINITI</span><span class="sub">GROUP RIDE SYSTEM</span>
+    <span id="online-led" class="led" title="connection"></span>
+    <button id="btn-profile" class="chip" aria-label="Profile">P</button>
+  </header>
+
+  <!-- WELCOME / LOGIN -->
+  <section data-screen="welcome" class="screen">
+    <div class="lcd panel big">
+      <div class="lcd-title">VICINITI</div>
+      <div class="lcd-sub">MEET · FOLLOW · NOBODY LEFT BEHIND</div>
+      <div class="lcd-line"></div>
+      <div class="lcd-row"><span>SYSTEM</span><span id="w-status">READY</span></div>
+    </div>
+    <div class="keys">
+      <button class="key wide" data-go="login">SIGN IN</button>
+      <button class="key wide" data-go="signup">CREATE ACCOUNT</button>
+      <button class="key wide ghost" id="btn-demo">DEMO RIDE</button>
+    </div>
+  </section>
+
+  <section data-screen="login" class="screen">
+    <div class="panel form">
+      <label>EMAIL<input id="li-email" type="email" autocomplete="email" inputmode="email"></label>
+      <label>PASSWORD<input id="li-pass" type="password" autocomplete="current-password"></label>
+      <div class="err" id="li-err"></div>
+    </div>
+    <div class="keys">
+      <button class="key wide primary" id="btn-login">SIGN IN</button>
+      <button class="key wide ghost" id="btn-magic">EMAIL ME A LINK</button>
+      <button class="key wide ghost" data-go="welcome">BACK</button>
+    </div>
+  </section>
+
+  <section data-screen="signup" class="screen">
+    <div class="panel form">
+      <label>RIDER NAME<input id="su-name" autocomplete="nickname"></label>
+      <label>EMAIL<input id="su-email" type="email" autocomplete="email" inputmode="email"></label>
+      <label>PASSWORD<input id="su-pass" type="password" autocomplete="new-password"></label>
+      <div class="err" id="su-err"></div>
+    </div>
+    <div class="keys">
+      <button class="key wide primary" id="btn-signup">CREATE ACCOUNT</button>
+      <button class="key wide ghost" data-go="welcome">BACK</button>
+    </div>
+  </section>
+
+  <!-- HOME -->
+  <section data-screen="home" class="screen">
+    <div class="lcd panel">
+      <div class="lcd-row"><span>RIDER</span><span id="h-name">—</span></div>
+      <div class="lcd-row"><span>GPS</span><span id="h-gps">SEARCHING</span></div>
+      <div class="lcd-row"><span>OFFLINE MAP</span><span id="h-map">NOT STORED</span></div>
+      <div class="lcd-row"><span>ACTIVE RIDE</span><span id="h-ride">NONE</span></div>
+    </div>
+    <div class="keys grid2">
+      <button class="key tall primary" data-go="create">CREATE<br>RIDE</button>
+      <button class="key tall" data-go="join">JOIN<br>RIDE</button>
+      <button class="key tall accent" id="btn-just-ride">JUST<br>RIDE</button>
+      <button class="key" id="btn-resume" hidden>RESUME RIDE</button>
+      <button class="key" data-go="rides">MY RIDES</button>
+      <button class="key" data-go="settings">SETTINGS</button>
+    </div>
+  </section>
+
+  <!-- CREATE RIDE -->
+  <section data-screen="create" class="screen">
+    <div class="panel form">
+      <label>RIDE NAME<input id="cr-name" placeholder="Sunday Canyon Run"></label>
+      <label>MEETING SPOT<input id="cr-meet" placeholder="Starbucks, Mission Gorge"></label>
+      <div class="row2">
+        <button class="key small" id="cr-usegps">USE MY LOCATION</button>
+        <span class="mono dim" id="cr-meet-coords">no coords</span>
+      </div>
+      <label>LEFT-BEHIND RADIUS (FT)
+        <div class="row2"><input id="cr-radius" type="range" min="100" max="2000" step="50" value="200"><span class="mono" id="cr-radius-v">200</span></div>
+      </label>
+      <label>WHEN
+        <div class="seg"><button class="on" data-when="now">NOW</button><button data-when="later">SCHEDULE</button></div>
+      </label>
+      <label id="cr-when-wrap" hidden>DATE & TIME<input id="cr-when" type="datetime-local"></label>
+      <label class="check"><input id="cr-public" type="checkbox"> PUBLIC (anyone with code can see it)</label>
+      <div class="err" id="cr-err"></div>
+    </div>
+    <div class="keys">
+      <button class="key wide primary" id="btn-create">CREATE RIDE</button>
+      <button class="key wide ghost" data-go="home">BACK</button>
+    </div>
+  </section>
+
+  <!-- RIDE CREATED / LOBBY -->
+  <section data-screen="lobby" class="screen">
+    <div class="lcd panel">
+      <div class="lcd-row"><span>RIDE</span><span id="lb-name">—</span></div>
+      <div class="code-block">
+        <div><small>RIDER CODE</small><b id="lb-code">----</b></div>
+        <div><small>SPECTATOR</small><b id="lb-spec">------</b></div>
+      </div>
+      <div class="lcd-row"><span>MEET</span><span id="lb-meet">—</span></div>
+      <div class="lcd-row"><span>RADIUS</span><span id="lb-radius">—</span></div>
+      <div class="lcd-row"><span>STATUS</span><span id="lb-status">—</span></div>
+    </div>
+    <div class="panel list" id="lb-members"></div>
+    <div class="keys grid2">
+      <button class="key" id="btn-share">SHARE CODE</button>
+      <button class="key" id="btn-roles">ASSIGN ROLES</button>
+      <button class="key wide primary" id="btn-start">START RIDE</button>
+      <button class="key wide ghost" id="btn-leave-lobby">LEAVE</button>
+    </div>
+  </section>
+
+  <!-- JOIN -->
+  <section data-screen="join" class="screen">
+    <div class="panel form">
+      <label>RIDE CODE<input id="jn-code" placeholder="7K2Q or spectator code" autocapitalize="characters" maxlength="8"></label>
+      <div class="err" id="jn-err"></div>
+    </div>
+    <div class="keys">
+      <button class="key wide primary" id="btn-join">JOIN</button>
+      <button class="key wide" id="btn-scan">SCAN QR</button>
+      <button class="key wide ghost" data-go="home">BACK</button>
+    </div>
+  </section>
+
+  <!-- MY RIDES -->
+  <section data-screen="rides" class="screen">
+    <div class="panel list" id="rides-list"><div class="dim">loading…</div></div>
+    <div class="keys"><button class="key wide ghost" data-go="home">BACK</button></div>
+  </section>
+
+  <!-- IN RIDE -->
+  <section data-screen="ride" class="screen ride">
+    <div id="cluster" class="cluster"></div>
+    <div id="alert" class="alert" hidden></div>
+    <div id="mapwrap" class="viewfinder">
+      <div id="map"></div>
+      <div class="vf-corner tl"></div><div class="vf-corner tr"></div><div class="vf-corner bl"></div><div class="vf-corner br"></div>
+      <div class="vf-hud"><span id="vf-meet">MEET —</span><button id="vf-follow" class="vf-btn">FOLLOW ●</button></div>
+    </div>
+    <div class="keys grid4">
+      <button class="key" id="btn-rollcall">ROLL<br>CALL</button>
+      <button class="key" id="btn-riders">RIDERS</button>
+      <button class="key" id="btn-stop">STOP</button>
+      <button class="key sos" id="btn-sos">SOS</button>
+    </div>
+    <div class="dialrow">
+      <div class="dial" id="skin-dial" role="button" aria-label="change skin"><div class="dial-knob"></div></div>
+      <div class="dial-labels"><small>SKIN</small><span id="skin-name">ENDURO BLUE</span></div>
+      <div class="leds">
+        <span><i id="led-gps" class="led"></i>GPS</span><span><i id="led-sync" class="led"></i>SYNC</span><span><i id="led-lead" class="led"></i>LEAD</span><span><i id="led-sos" class="led"></i>SOS</span>
+      </div>
+    </div>
+    <div class="slider" id="sos-slider" hidden><div class="slider-track"><div class="slider-knob" id="sos-knob">SOS ▶▶▶</div><span>SLIDE TO SEND SOS</span></div><button class="key small ghost" id="sos-cancel">CANCEL</button></div>
+  </section>
+
+  <!-- RIDERS / ROLL CALL -->
+  <section data-screen="riders" class="screen">
+    <div class="lcd panel"><div class="lcd-row"><span>RIDERS</span><span id="rd-count">0/0</span></div></div>
+    <div class="panel list" id="rd-list"></div>
+    <div class="keys grid2">
+      <button class="key" id="btn-rollcall2">START ROLL CALL</button>
+      <button class="key ghost" data-go="ride">BACK</button>
+    </div>
+  </section>
+
+  <section data-screen="rollcall" class="screen">
+    <div class="lcd panel big">
+      <div class="lcd-title">ROLL CALL</div>
+      <div class="lcd-sub" id="rc-sub">Waiting for riders…</div>
+      <div class="lcd-row"><span>RESPONDED</span><span id="rc-count">0/0</span></div>
+    </div>
+    <div class="panel list" id="rc-list"></div>
+    <div class="keys">
+      <button class="key wide primary" id="btn-here">I'M HERE</button>
+      <button class="key wide ghost" data-go="ride">BACK TO RIDE</button>
+    </div>
+  </section>
+
+  <!-- EMERGENCY -->
+  <section data-screen="emergency" class="screen">
+    <div class="lcd panel big danger">
+      <div class="lcd-title">SOS</div>
+      <div class="lcd-sub" id="em-who">—</div>
+      <div class="lcd-row"><span>DISTANCE</span><span id="em-dist">—</span></div>
+      <div class="lcd-row"><span>CONTACT</span><span id="em-contact">—</span></div>
+      <div class="lcd-row"><span>MEDICAL</span><span id="em-med">—</span></div>
+    </div>
+    <div class="keys">
+      <button class="key wide" id="btn-call911">CALL 911</button>
+      <button class="key wide" id="btn-navigate">NAVIGATE TO RIDER</button>
+      <button class="key wide primary" id="btn-sos-clear">CLEAR SOS</button>
+      <button class="key wide ghost" data-go="ride">BACK TO RIDE</button>
+    </div>
+  </section>
+
+  <!-- END RIDE -->
+  <section data-screen="end" class="screen">
+    <div class="lcd panel big">
+      <div class="lcd-title" id="en-title">RIDE COMPLETE</div>
+      <div class="lcd-row" id="en-row-date" hidden><span>DATE</span><span id="en-date">—</span></div>
+      <div class="lcd-row"><span>DISTANCE</span><span id="en-dist">—</span></div>
+      <div class="lcd-row"><span>TIME</span><span id="en-time">—</span></div>
+      <div class="lcd-row"><span>TOP SPEED</span><span id="en-top">—</span></div>
+      <div class="lcd-row" id="en-row-avg" hidden><span>AVG SPEED</span><span id="en-avg">—</span></div>
+      <div class="lcd-row"><span>RIDERS</span><span id="en-riders">—</span></div>
+    </div>
+    <div id="en-mapwrap" class="viewfinder end-map" hidden><div id="en-map"></div><div class="vf-corner tl"></div><div class="vf-corner tr"></div><div class="vf-corner bl"></div><div class="vf-corner br"></div></div>
+    <div class="keys"><button class="key wide primary" data-go="home">HOME</button></div>
+  </section>
+
+  <!-- PROFILE -->
+  <section data-screen="profile" class="screen">
+    <div class="panel form">
+      <label>RIDER NAME<input id="pf-name"></label>
+      <label>VEHICLE
+        <div class="seg" id="pf-vehicle"><button data-v="ebike">E-BIKE</button><button data-v="emoto">E-MOTO</button><button data-v="motorbike" class="on">MOTO</button><button data-v="auto">AUTO</button></div>
+      </label>
+      <label>EMERGENCY CONTACT NAME<input id="pf-ecn"></label>
+      <label>EMERGENCY CONTACT PHONE<input id="pf-ecp" type="tel" inputmode="tel"></label>
+      <label>MEDICAL NOTES (shown to riders only during SOS)<textarea id="pf-med" rows="3"></textarea></label>
+      <div class="err" id="pf-err"></div>
+    </div>
+    <div class="keys">
+      <button class="key wide primary" id="btn-save-profile">SAVE</button>
+      <button class="key wide ghost" id="btn-signout">SIGN OUT</button>
+      <button class="key wide ghost" data-go="home">BACK</button>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section data-screen="settings" class="screen">
+    <div class="panel form">
+      <label>CLUSTER SKIN
+        <div class="seg wrap" id="st-skins"></div>
+      </label>
+      <label>UNITS
+        <div class="seg" id="st-units"><button data-u="mph" class="on">MPH / FT</button><button data-u="kmh">KM/H / M</button></div>
+      </label>
+      <label>OFFLINE MAP REGION
+        <input id="st-pmtiles" placeholder="https://your-site.netlify.app/san-diego.pmtiles">
+        <div class="row2"><button class="key small" id="st-dl">DOWNLOAD</button><button class="key small ghost" id="st-rm">DELETE</button><span class="mono dim" id="st-map">—</span></div>
+        <div class="bar"><i id="st-bar"></i></div>
+      </label>
+      <label class="check"><input id="st-wake" type="checkbox" checked> KEEP SCREEN ON DURING RIDE</label>
+      <label class="check"><input id="st-voice" type="checkbox" checked> VOICE ALERTS</label>
+    </div>
+    <div class="keys"><button class="key wide ghost" data-go="home">BACK</button></div>
+  </section>
+
+  <div id="toast" class="toast" hidden></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="offline-map.js"></script>
+<script src="skins.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
