@@ -28,3 +28,8 @@ The RPM band is repurposed as a speed band (numbers × 10 = mph); fuel/range →
 
 ## Still to do
 QR scan + Bluetooth/Meshtastic (native wrap), sub-group creation UI, route planning (OSRM) on the create screen, push notifications.
+
+## Speedometer included
+The standalone GPS speedometer lives in /speedometer/ (open it from the SPEEDOMETER key on the home screen,
+or directly at /speedometer/). It has its own offline cache and can be added to the Home Screen as its own app.
+A "‹ VICINITI" button in its top-left corner goes back.
